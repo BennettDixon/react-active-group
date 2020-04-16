@@ -7,12 +7,12 @@ import * as S from './styles'
 /**
  * I am calling these Ultra-HOCS -- HOCS that provide and manage props for a set of children rather than a singular child, got a better name?
  *
- * manages the active state of its children by managing and passing a boolean prop `isActive` to them and their nested component (or just the non-nested component *EXPERIMENTAL*)
+ * manages the active state of its children by managing and passing a boolean prop `isActive` to them and their nested component (or just the non-nested component)
  *
  * all children are assumed to have one nested child (typically this child is the prop managed),
  *    allowing for wrapping with a link or custom click handler div. Both components receive the `isActive` prop incase custom management is needed in both
  *
- * *EXPERIMENTAL* for no nesting (passing components directly as children, pass the `noNesting` prop)
+ * for no nesting (passing components directly as children, pass the `noNesting` prop)
  *
  * children can have an onClick prop, ActiveGroup will call this function with the primary child upon click if present
  */
@@ -73,6 +73,7 @@ class ActiveGroup extends Component {
 
   handleComponentClick = (component, event) => {
     const { activeId } = this.state
+
     if (activeId === component.id) return
 
     if (typeof component.onClick === typeof (() => {})) {
@@ -117,11 +118,13 @@ class ActiveGroup extends Component {
      * It is needed when a user clicks on something else that causes that prop to change, for example the logo link
      * this causes default active to be different, which is how we can detect change even though our group wasn't clicked
      */
-    if (defaultActive !== prevDefaultActive) { this.setState({ prevDefaultActive: defaultActive, activeId: defaultActive }) }
+    if (defaultActive !== prevDefaultActive) {
+      this.setState({ prevDefaultActive: defaultActive, activeId: defaultActive })
+    }
   }
 
   render () {
-    const { noNesting } = this.props
+    const { noNesting, customComponentStyles } = this.props
     const { activeId } = this.state
 
     /* this fixes issues causing prop updates to not be passed to children */
@@ -130,7 +133,7 @@ class ActiveGroup extends Component {
     const Components = components.map(component => {
       const isActive = activeId !== undefined ? component.id === activeId : false
 
-      const newComponentProps = { ...component.component.props, isActive }
+      const newComponentProps = { ...component.component.props, isActive, customComponentStyles }
       const Component = React.cloneElement(component.component, newComponentProps)
 
       const Parent =
